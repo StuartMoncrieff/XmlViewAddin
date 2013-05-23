@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Program Files %28x86%29\HP\LoadRunner\AddIns\extra\XmlViewAddin\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,35 +32,27 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HP.LR.VuGen.Common, Version=11.50.0.0, Culture=neutral, processorArchitecture=MSIL">
-      
       <Private>False</Private>
     </Reference>
     <Reference Include="HP.LR.VuGen.XmlViewer">
-
       <Private>False</Private>
     </Reference>
     <Reference Include="HP.Utt.CodeEditor">
-
       <Private>False</Private>
     </Reference>
     <Reference Include="HP.Utt.Common">
-
       <Private>False</Private>
     </Reference>
     <Reference Include="HP.Utt.Core">
-
       <Private>False</Private>
     </Reference>
     <Reference Include="HP.Utt.Dialog">
-
       <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.Core">
-
       <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpDevelop">
-
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
@@ -86,6 +78,22 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+:: Copy compiled add-in from the VS output folder to the VuGen Add-in folder
+IF NOT EXIST "%25VUGEN_PATH%25AddIns\extra\XmlViewAddin\" (
+    MKDIR "%25VUGEN_PATH%25AddIns\extra\XmlViewAddin\"
+)
+copy ..\bin\*.* "%25VUGEN_PATH%25AddIns\extra\XmlViewAddin" /Y
+
+:: If 7zip is installed, create a redistributable *.vugenaddin file for use with the VuGen Add-in Manager
+IF EXIST "C:\Program Files\7-Zip\7z.exe" (
+    CD ..\bin
+    IF EXIST XmlViewAddin.vugenaddin DEL XmlViewAddin.vugenaddin
+    "c:\Program Files\7-Zip\7z.exe" a -tzip XmlViewAddin.vugenaddin *.*
+)
+</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
